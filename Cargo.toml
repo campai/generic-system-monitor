@@ -2,11 +2,15 @@
 name = "generic-system-monitor"
 version = "0.1.0"
 edition = "2021"
+authors = ["campai"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 rocket = "0.5.0-rc.2"
+
+[profile.dev]
+lto = true
 
 [profile.release]
 opt-level = 3

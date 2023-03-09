@@ -1,5 +1,4 @@
-#[macro_use]
-extern crate rocket;
+#[macro_use] extern crate rocket;
 
 use std::io::Read;
 
@@ -9,8 +8,8 @@ use rocket::response::content::RawHtml;
 
 const VERSION: &str = "v1";
 
-#[get("/info")]
-fn info() -> RawHtml<String> {
+#[get("/observer")]
+fn observers() -> RawHtml<String> {
     let content = get_page("observers.html", "{{RUN END-POINT}}", &format!("/api/{VERSION}/observer/run"));
     RawHtml(content)
 }
@@ -39,5 +38,5 @@ fn run(form: Form<RunRequest<'_>>) -> String {
 #[launch]
 fn start() -> rocket::Rocket<rocket::Build> {
     rocket::build()
-        .mount(format!("/api/{VERSION}"), routes![info, run])
+        .mount(format!("/api/{VERSION}"), routes![observers, run])
 }
