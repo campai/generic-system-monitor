@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Generic System Monitor</title>
+    <meta name="viewport" content="width=device-width"/>
+    <script type="text/javascript"
+            src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
+    </script>
+    <script type="text/javascript">
+        const refreshTimeMs = 5000;
+        let callEndTime;
+
+        function refreshObservers(forceRun) {
+            if (forceRun == false && typeof callEndTime !== 'undefined') {
+                let diff = Date.now() - callEndTime;
+                if (diff < refreshTimeMs - 50) { // -50ms to prevent false positives; as it seems JS's `interval` is not actually running functions every exactly set interval 🤷🏻
+                    console.log("⏲ Skipping observers refresh. Not needed. Refreshed " + diff + "ms ago.")
+                    return;
+                }
+            }
+
+            $.ajax('/gsm/api/v1/observer',
+                {
+                    success: function (data, status, xhr) {   // success callback function
+                        $('#observers').empty();
+                        let prettyJson = JSON.stringify(data, null, 2);
+                        $('#observers').append("JSON data: <pre><code>" + prettyJson + "</code></pre> Timestamp:" + Date.now());
+                    },
+                    error: function (jqXhr, textStatus, errorMessage) { // error callback
+                        $('#observers').append('Error: ' + errorMessage);
+                    }
+                });
+
+            callEndTime = Date.now();
+        }
+
+        $(document).ready(function () {
+                $('#refreshObserversBtn').click(function () {
+                    refreshObservers(true);
+                });
+
+                setInterval(function () {
+                    refreshObservers(false);
+                }, refreshTimeMs);
+            }
+        );
+    </script>
+</head>
+
+<body>
+<form action="/gsm/api/v1/observer/1/run" method="post">
+    <input type="text" name="name"/>
+    <input type="number" name="delay"/>
+    <button type="submit">Test observer run</button>
+</form>
+
+<input type="button" id="refreshObserversBtn" value="Refresh"/>
+
+<p id="observers">
+    <!--  dynamic content  -->
+</p>
+</body>
+
+</html>
