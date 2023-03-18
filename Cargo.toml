@@ -9,9 +9,6 @@ authors = ["campai"]
 [dependencies]
 rocket = "0.5.0-rc.2"
 
-[profile.dev]
-lto = true
-
 [profile.release]
 opt-level = 3
 strip = true
