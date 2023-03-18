@@ -1,17 +1,30 @@
+use std::process::Command;
+use std::str;
+
 use rocket::form::Form;
 use rocket::response::content::RawJson;
 
 #[derive(FromForm)]
 pub struct RunRequest {
     #[field(validate = len(1..50))]
-    name: String,
+    command: String,
     #[field(validate = range(500..))]
     delay: u32,
 }
 
 #[post("/observer/<id>/run", format = "application/x-www-form-urlencoded", data = "<form>")]
 pub async fn run(id: u32, form: Form<RunRequest>) -> String {
-    format!("Received for observer {id}: {}, {}", form.name, form.delay)
+    dbg!("Received for observer {}: {}, {}", id, &form.command, form.delay);
+
+    let output = Command::new(&form.command)
+        .output()
+        .expect("Failed to execute command.");
+
+    format!(
+        "stdio:\n{}\nstderr:\n{}",
+        str::from_utf8(&output.stdout).unwrap(),
+        str::from_utf8(&output.stderr).unwrap()
+    )
 }
 
 #[get("/observer")]
