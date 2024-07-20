@@ -7,7 +7,7 @@ authors = ["campai"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rocket = "0.5.0-rc.2"
+rocket = "0.5.1"
 
 [profile.release]
 opt-level = 3
